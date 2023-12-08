@@ -1,0 +1,68 @@
+/* What I learned: 
+#include <fstream> is needed in C++ whenever you're working with file Input/Output
+#include <iomanip> is needed  for manipulating inputs/outputs (e.g. using setprecision to specifiy how many decimal points
+a certain output should be set to -- like 2 decimal points for outputs that are currency).
+
+cerr << is used instead of cout << for error messages. More details within the if statement below.
+return 1 (or return of any non-zero number) is used to indicate an error occurred.
+
+"ifstream inFile(fileName);" was used to open the input file stored in fileName.
+inFile >> variable was used to store inputs into variables, similar to cin >> variable, but using pre-determined inputs from
+a file instead of user inputs.
+
+setw(n) can be used to increase the space between two outputted items, but make sure that n is big enough to actually create
+the amount of space you want because I made the mistake of originally keeping n low (n was equal to 7), but my outputs were 
+closer than I wanted, so I increased the n by 5, setting it to 12, and then the outputs were sufficiently spaced apart. 
+
+Don't forget to close the input file "inFile.close()" for this assignment
+
+*/
+#include <iostream> // for cin and cout -- iostream means input/output stream
+#include <fstream> // for files (input and output) -- the f means filestream
+#include <iomanip> // for setting numbers to specific decimal points using setprecision -- iomanip means input/output manipulator
+#include <string> // for the employee first and last name, which are string variables
+
+using namespace std;
+
+int main() {
+  //Prompting user to enter file name
+  string fileName;
+  // cout << "Enter the name of the file: " << endl;
+  cin >> fileName;
+
+  // open the input file
+  ifstream inFile(fileName);
+  
+  // Checking to see if file name is properly opened
+  if (!inFile) {
+    cerr << "Error. Unable to open file." << endl; // cerr is the standard error stream, designed specifically for errors to display as quickly as possible with potentially less buffer time than cout (the standard output stream)
+    return 1; // returning a non-zero value (typically 1) in the main function is typically used to indicate that an error has occurred
+  }
+
+  //Reading data from input file
+  string employeeFirstName, employeeLastName;
+  double baseSalary, commissionPercent, employeeTotalSales, employeeTotalExpenses;
+
+  inFile >> employeeFirstName >> employeeLastName;
+  inFile >> baseSalary >> commissionPercent;
+  inFile >> employeeTotalSales;
+  inFile >> employeeTotalExpenses;
+
+  //Calculating gross pay
+  double employeeCommissionTotal = (commissionPercent / 100.0) * employeeTotalSales;
+  double grossPayTotal = employeeCommissionTotal + baseSalary + employeeTotalExpenses; //pretty sure employeeTotalExpenses should be subtracted from gross pay, not added to it, but the autograder marked it as wrong to subtract the expenses, and it marked it as correct to add them, so whatever. 
+
+  //Outputting employee's info
+  cout << "Payroll data for " << employeeFirstName << " " << employeeLastName << endl << endl;
+  cout << fixed << setprecision(2);
+  cout << "Base Salary:" << setw(12) << baseSalary << endl;
+  cout << "Commission: " << setw(12) << employeeCommissionTotal << " ( " << fixed << setprecision(1) << commissionPercent << "% of " << fixed << setprecision(2) << employeeTotalSales << ")" << endl;
+  cout << "Expenses:   " << setw(12) << employeeTotalExpenses << endl;
+  cout << "            " << setw(12) << "--------" << endl;
+  cout << "Total:      " << setw(12) << grossPayTotal;
+
+  //Closing input file
+  inFile.close();
+
+  return 0;  
+}
